@@ -5,7 +5,7 @@
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2812B
 
-#define NUM_LEDS 10                                       //Total LEDs Count
+#define NUM_LEDS 81                                     //Total LEDs Count 18 28 35
 
 #define BRIGHTNESS  100
 #define FRAMES_PER_SECOND 60
@@ -17,12 +17,19 @@ const int BTN_NO = 9;
 bool BTN_STATE = false;
 int LST_YBTN_STATE = HIGH;
 int CRN_YBTN_STATE;
-int COUNTY = 0;
 int LST_NBTN_STATE = HIGH;
 int CRN_NBTN_STATE;
-int COUNTN = 0;
 int initialstate = 0;
 int oldstate = 0;
+
+//Counter values
+int BTN_CNT = 0;
+int COUNTY = 0;
+int COUNTN = 0;
+int COUNTA = 0;
+int COUNTB = 0;
+int COUNTC = 0;
+int COUNTD = 0;
 
 bool gReverseDirection = false;
 
@@ -30,9 +37,6 @@ unsigned long lastDebounceTime = 0;  // the last time the btn was toggled
 unsigned long debounceDelay = 50;    // the debounce time
 
 CRGB leds[NUM_LEDS];
-
-
-
 
 void setup() {
   Serial.begin(9600);
@@ -42,7 +46,7 @@ void setup() {
 
   FastLED.setBrightness( BRIGHTNESS );
 
-  pinMode(BTN_YES, INPUT_PULLUP);
+  pinMode(BTN_YES, INPUT);
   pinMode(BTN_NO, INPUT);
 }
 void loop() {
@@ -50,60 +54,110 @@ void loop() {
   CRN_YBTN_STATE = digitalRead(BTN_YES);
   CRN_NBTN_STATE = digitalRead(BTN_NO);
 
-  if ((CRN_YBTN_STATE == HIGH ) && (CRN_NBTN_STATE == HIGH) && (LST_YBTN_STATE == LOW) && (LST_NBTN_STATE == LOW)) {
-    //DiscSparkers();
-    COUNTY = 0;
-    COUNTN = 0;
-    for (int y = 0; y < 10; y++) {
-      int b = y;
-      leds[b] = CRGB::Black;
-      FastLED.show();
-    }
-  }
+  //  //press both buttons for resetting counters
+  //  if ((CRN_YBTN_STATE == HIGH ) && (CRN_NBTN_STATE == HIGH) && (LST_YBTN_STATE == LOW) && (LST_NBTN_STATE == LOW)) {
+  //    //DiscSparkers();
+  //    COUNTY = 0;
+  //    COUNTN = 0;
+  //    COUNTA = 0;
+  //    COUNTB = 0;
+  //    COUNTC = 0;
+  //    COUNTD = 0;
+  //    for (int y = 0; y < 81; y++) {
+  //      int b = y;
+  //      leds[b] = CRGB::Black;
+  //      FastLED.show();
+  //    }
+  //  }
 
-    // LST_YBTN_STATE = CRN_YBTN_STATE;
-    //LST_NBTN_STATE = CRN_NBTN_STATE;
+  switch (BTN_CNT) {
+    case 0:
+      if (COUNTN + COUNTY <= 18) {
+        if ((CRN_NBTN_STATE == HIGH) && (CRN_YBTN_STATE == LOW) && (LST_NBTN_STATE == LOW)) {
+          int i = 0;
+          for (int y = 0; y <= COUNTN ; y++) {
+            int b = 17 - i;
+            leds[b] = CRGB::Red;
+            FastLED.show();
+            i++;
+            Serial.println(COUNTN);
+          }
+          COUNTN++;
+        }
 
-    if (COUNTN + COUNTY < 10) {
-
-      if ((CRN_YBTN_STATE == HIGH ) && (CRN_NBTN_STATE == LOW) && (LST_YBTN_STATE == LOW)) {
-
-        for (int y = 0; y <= COUNTY ; y++) {
-          int a = y;
-          leds[a] = CRGB::Green;
-          FastLED.show();
-
-
-          Serial.println(COUNTY);
-          // delay(200);
-          //leds[a] = CRGB::Black;
-
-        } COUNTY++;
-
+        if ((CRN_YBTN_STATE == HIGH) && (CRN_NBTN_STATE == LOW) && (LST_YBTN_STATE == LOW)) {
+          for (int y = 0; y <= COUNTY ; y++) {
+            int a = y;
+            leds[a] = CRGB::Green;
+            FastLED.show();
+            Serial.println(COUNTY);
+          }
+          COUNTY++;
+        }
       }
       LST_YBTN_STATE = CRN_YBTN_STATE;
-
-
-
-
-
-      if ((CRN_NBTN_STATE == HIGH) && (CRN_YBTN_STATE == LOW) && (LST_NBTN_STATE == LOW)) {
-        int i = 0;
-        for (int y = 0; y <= COUNTN ; y++) {
-
-          // int b = 17 - i;
-          int b = 9 - i;
-          leds[b] = CRGB::Red;
-          FastLED.show();
-          i++;
-        }
-        COUNTN++;
-      }
-
       LST_NBTN_STATE = CRN_NBTN_STATE;
-    }
+      break;
+    case 1:
+      if (COUNTA + COUNTB  <= 28) {
+        if ((CRN_YBTN_STATE == HIGH ) && (CRN_NBTN_STATE == LOW) && (LST_YBTN_STATE == LOW)) {
 
+          for (int y = 18; y <= COUNTA +18; y++) {
+            int a = y;
+            leds[a] = CRGB::Green;
+            FastLED.show();
+            Serial.println(COUNTA);
+          }
+          COUNTA++;
+        }
+
+        if ((CRN_NBTN_STATE == HIGH) && (CRN_YBTN_STATE == LOW) && (LST_NBTN_STATE == LOW)) {
+          int i = 0;
+          for (int y = 0; y <= COUNTB ; y++) {
+            int b = 45 - i;
+            leds[b] = CRGB::Red;
+            FastLED.show();
+            i++;
+            Serial.println(COUNTB);
+          }
+          COUNTB++;
+        }
+      }
+      LST_NBTN_STATE = CRN_NBTN_STATE;
+      LST_YBTN_STATE = CRN_YBTN_STATE;
+      break;
+    case 2:
+      if (COUNTC + COUNTD <= 35) {
+        if ((CRN_YBTN_STATE == HIGH ) && (CRN_NBTN_STATE == LOW) && (LST_YBTN_STATE == LOW)) {
+
+          for (int y = 46; y <= COUNTY +46; y++) {
+            int a = y;
+            leds[a] = CRGB::Green;
+            FastLED.show();
+            Serial.println(COUNTC);
+          }
+          COUNTC++;
+        }
+
+        if ((CRN_NBTN_STATE == HIGH) && (CRN_YBTN_STATE == LOW) && (LST_NBTN_STATE == LOW)) {
+          int i = 0;
+          for (int y = 0; y <= COUNTD ; y++) {
+            int b = 80 - i;
+            leds[b] = CRGB::Red;
+            FastLED.show();
+            i++;
+            Serial.println(COUNTD);
+          }
+          COUNTD++;
+        }
+      }
+      LST_YBTN_STATE = CRN_YBTN_STATE;
+      LST_NBTN_STATE = CRN_NBTN_STATE;
+      break;
   }
+
+
+}
 
 
 
